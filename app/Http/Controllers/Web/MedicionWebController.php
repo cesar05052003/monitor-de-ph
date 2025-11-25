@@ -15,30 +15,16 @@ class MedicionWebController extends Controller
     public function descargarPDF()
     {
         $mediciones = Medicion::orderBy('fecha', 'desc')->orderBy('hora', 'desc')->get();
-        // Generar CSV y guardarlo temporalmente en storage/public
-        $filename = 'reporte_mediciones_ph_' . date('Y-m-d_H-i-s') . '.csv';
 
-        $csv = "Reporte de Mediciones de pH\n";
-        $csv .= "Generado el: " . now()->format('d/m/Y H:i:s') . "\n\n";
-        $csv .= "#,pH,Superficie,Fecha,Hora\n";
+        $pdf = Pdf::loadView('mediciones.reporte', compact('mediciones'));
 
-        foreach ($mediciones as $i => $medicion) {
-            $csv .= ($i + 1) . ',"' . $medicion->valor_ph . '","' . $medicion->tipo_superficie . '","' . $medicion->fecha . '","' . $medicion->hora . "" . "\n";
-        }
-
-        $storagePath = 'public/' . $filename;
-        Storage::put($storagePath, $csv);
-
-        $fullPath = storage_path('app/' . $storagePath);
-
-        $headers = [
-            'Content-Type' => 'text/csv; charset=utf-8',
+        return $pdf->download('reporte_mediciones_ph.pdf', [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="reporte_mediciones_ph.pdf"',
             'X-Content-Type-Options' => 'nosniff',
-            'Cache-Control' => 'private, max-age=0, no-cache'
-        ];
-
-        // Devolver como descarga con headers y eliminar archivo después de enviado
-        return response()->download($fullPath, $filename, $headers)->deleteFileAfterSend(true);
+            'X-Frame-Options' => 'SAMEORIGIN',
+            'X-XSS-Protection' => '1; mode=block'
+        ]);
     }
 
     public function index(Request $request)

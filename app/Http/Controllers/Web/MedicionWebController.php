@@ -9,33 +9,37 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Medicion;
 use DateTime;
+use Illuminate\Support\Facades\Storage;
 
 class MedicionWebController extends Controller
 {
     public function descargarPDF()
     {
         $mediciones = Medicion::orderBy('fecha', 'desc')->orderBy('hora', 'desc')->get();
-        
-        // Generar PDF como CSV que el usuario puede abrir/convertir
+        // Generar CSV y guardarlo temporalmente en storage/public
         $filename = 'reporte_mediciones_ph_' . date('Y-m-d_H-i-s') . '.csv';
-        
-        $headers = [
-            'Content-Type' => 'text/csv; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-            'Pragma' => 'public',
-            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
-            'X-Content-Type-Options' => 'nosniff'
-        ];
-        
+
         $csv = "Reporte de Mediciones de pH\n";
         $csv .= "Generado el: " . now()->format('d/m/Y H:i:s') . "\n\n";
         $csv .= "#,pH,Superficie,Fecha,Hora\n";
-        
+
         foreach ($mediciones as $i => $medicion) {
-            $csv .= ($i + 1) . ',"' . $medicion->valor_ph . '","' . $medicion->tipo_superficie . '","' . $medicion->fecha . '","' . $medicion->hora . "\"\n";
+            $csv .= ($i + 1) . ',"' . $medicion->valor_ph . '","' . $medicion->tipo_superficie . '","' . $medicion->fecha . '","' . $medicion->hora . "" . "\n";
         }
-        
-        return response()->make($csv, 200, $headers);
+
+        $storagePath = 'public/' . $filename;
+        Storage::put($storagePath, $csv);
+
+        $fullPath = storage_path('app/' . $storagePath);
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=utf-8',
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, max-age=0, no-cache'
+        ];
+
+        // Devolver como descarga con headers y eliminar archivo después de enviado
+        return response()->download($fullPath, $filename, $headers)->deleteFileAfterSend(true);
     }
 
     public function index(Request $request)

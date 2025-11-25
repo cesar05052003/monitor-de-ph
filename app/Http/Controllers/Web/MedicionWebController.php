@@ -28,7 +28,39 @@ class MedicionWebController extends Controller
         }
 
         $storagePath = 'public/' . $filename;
-        Storage::put($storagePath, $csv);
+            try {
+                // Asegurar que el directorio exista
+                if (!Storage::exists('public')) {
+                    Storage::makeDirectory('public');
+                }
+
+                Storage::put($storagePath, $csv);
+
+                $fullPath = storage_path('app/' . $storagePath);
+
+                $headers = [
+                    'Content-Type' => 'text/csv; charset=utf-8',
+                    'X-Content-Type-Options' => 'nosniff',
+                    'Cache-Control' => 'private, max-age=0, no-cache'
+                ];
+
+                // Devolver como descarga con headers y eliminar archivo después de enviado
+                return response()->download($fullPath, $filename, $headers)->deleteFileAfterSend(true);
+            } catch (\Exception $e) {
+                // Registrar el error para diagnóstico
+                Log::error('Error en descargarPDF: ' . $e->getMessage(), [
+                    'exception' => $e,
+                ]);
+
+                // Fallback: devolver CSV en memoria (no guardado), así el usuario aún puede descargar
+                $headers = [
+                    'Content-Type' => 'text/csv; charset=utf-8',
+                    'Content-Disposition' => 'attachment; filename="reporte_mediciones_fallback.csv"',
+                    'X-Content-Type-Options' => 'nosniff'
+                ];
+
+                return response()->make($csv, 200, $headers);
+            }
 
         $fullPath = storage_path('app/' . $storagePath);
 

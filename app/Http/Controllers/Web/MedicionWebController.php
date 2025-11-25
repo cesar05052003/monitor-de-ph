@@ -87,7 +87,7 @@ class MedicionWebController extends Controller
             if (!$existe) {
                 DB::table('mediciones')->insert([
                     'valor_ph' => $ph,
-                    'tipo_superficie' => 'Importado',
+                    'tipo_superficie' => 'Líquido',
                     'fecha' => $fecha,
                     'hora' => $hora,
                     'entry_id' => $entryId // 👈 Guardamos el ID único de la medición

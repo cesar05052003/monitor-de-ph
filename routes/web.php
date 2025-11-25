@@ -40,7 +40,7 @@ Route::post('/api/registrar-medicion', function (Request $request) {
     if (!$existe) {
         DB::table('mediciones')->insert([
             'valor_ph' => $ph,
-            'tipo_superficie' => 'Importado',
+            'tipo_superficie' => 'Líquido',
             'fecha' => $fecha,
             'hora' => $hora
         ]);

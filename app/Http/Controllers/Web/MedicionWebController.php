@@ -8,22 +8,34 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Medicion;
+use DateTime;
 
 class MedicionWebController extends Controller
 {
     public function descargarPDF()
     {
         $mediciones = Medicion::orderBy('fecha', 'desc')->orderBy('hora', 'desc')->get();
-
-        $pdf = Pdf::loadView('mediciones.reporte', compact('mediciones'));
-
-        return $pdf->download('reporte_mediciones_ph.pdf', [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="reporte_mediciones_ph.pdf"',
-            'X-Content-Type-Options' => 'nosniff',
-            'X-Frame-Options' => 'SAMEORIGIN',
-            'X-XSS-Protection' => '1; mode=block'
-        ]);
+        
+        // Generar PDF como CSV que el usuario puede abrir/convertir
+        $filename = 'reporte_mediciones_ph_' . date('Y-m-d_H-i-s') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Pragma' => 'public',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'X-Content-Type-Options' => 'nosniff'
+        ];
+        
+        $csv = "Reporte de Mediciones de pH\n";
+        $csv .= "Generado el: " . now()->format('d/m/Y H:i:s') . "\n\n";
+        $csv .= "#,pH,Superficie,Fecha,Hora\n";
+        
+        foreach ($mediciones as $i => $medicion) {
+            $csv .= ($i + 1) . ',"' . $medicion->valor_ph . '","' . $medicion->tipo_superficie . '","' . $medicion->fecha . '","' . $medicion->hora . "\"\n";
+        }
+        
+        return response()->make($csv, 200, $headers);
     }
 
     public function index(Request $request)

@@ -17,7 +17,14 @@ class MedicionWebController extends Controller
 
         $pdf = Pdf::loadView('mediciones.reporte', compact('mediciones'));
 
-        return $pdf->download('reporte_mediciones_ph.pdf');
+        return response()->streamDownload(function () use ($pdf) {
+    echo $pdf->output();
+}, 'reporte_mediciones_ph.pdf', [
+    'Content-Type' => 'application/pdf',
+    'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+    'Pragma' => 'no-cache'
+]);
+
     }
 
     public function index(Request $request)

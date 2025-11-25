@@ -53,6 +53,7 @@
 
     <h1 class="mb-4">Registro de Mediciones de pH</h1>
     <div id="alerta-ph" class="mb-3"></div>
+    <div class="mb-2">Valor pH actual: <strong id="valor-ph">--</strong></div>
     <button id="toggle-dark" class="btn btn-dark mb-3">🌙 Modo Oscuro</button>
     <a href="{{ route('mediciones.pdf') }}" class="btn btn-primary mb-3">
     Descargar reporte PDF
@@ -215,8 +216,11 @@ if (valorPh < 6.5 || valorPh > 8.5) {
             
             chart.update();
             
-            // Actualizar el valor en tiempo real
-            document.getElementById('valor-ph').textContent = nuevaMedicion.valor_ph;
+            // Actualizar el valor en tiempo real (si existe el elemento)
+            const valorPhEl = document.getElementById('valor-ph');
+            if (valorPhEl) {
+                valorPhEl.textContent = nuevaMedicion.valor_ph;
+            }
             const alertaDiv = document.getElementById('alerta-ph');
 const ph = parseFloat(nuevaMedicion.valor_ph);
 
@@ -314,7 +318,10 @@ if (ph < 6.5) {
                 const valorPH = parseFloat(ultimoDato.field1).toFixed(2);
                 const fecha = new Date(ultimoDato.created_at);
 
-                document.getElementById('valor-ph').textContent = valorPH;
+                const valorPhEl2 = document.getElementById('valor-ph');
+                if (valorPhEl2) {
+                    valorPhEl2.textContent = valorPH;
+                }
 
                 const hora = fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                 const fechaStr = fecha.toISOString().split('T')[0];
@@ -329,7 +336,10 @@ if (ph < 6.5) {
 
             } catch (error) {
                 console.error('Error al obtener datos de ThingSpeak:', error);
-                document.getElementById('valor-ph').textContent = 'Error';
+                const valorPhEl3 = document.getElementById('valor-ph');
+                if (valorPhEl3) {
+                    valorPhEl3.textContent = 'Error';
+                }
             }
         }
 

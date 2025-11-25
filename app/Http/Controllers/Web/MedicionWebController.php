@@ -17,18 +17,13 @@ class MedicionWebController extends Controller
 
         $pdf = Pdf::loadView('mediciones.reporte', compact('mediciones'));
 
-        return response()->streamDownload(function () use ($pdf) {
-    echo $pdf->output();
-}, 'reporte_mediciones_ph.pdf', [
-    'Content-Type' => 'application/pdf',
-    'Content-Disposition' => 'attachment; filename="reporte_mediciones_ph.pdf"',
-    'Content-Transfer-Encoding' => 'binary',
-    'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
-    'Pragma' => 'no-cache',
-    'Expires' => '0',
-    'X-Content-Type-Options' => 'nosniff'
-]);
-
+        return $pdf->download('reporte_mediciones_ph.pdf', [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="reporte_mediciones_ph.pdf"',
+            'X-Content-Type-Options' => 'nosniff',
+            'X-Frame-Options' => 'SAMEORIGIN',
+            'X-XSS-Protection' => '1; mode=block'
+        ]);
     }
 
     public function index(Request $request)

@@ -21,8 +21,12 @@ class MedicionWebController extends Controller
     echo $pdf->output();
 }, 'reporte_mediciones_ph.pdf', [
     'Content-Type' => 'application/pdf',
+    'Content-Disposition' => 'attachment; filename="reporte_mediciones_ph.pdf"',
+    'Content-Transfer-Encoding' => 'binary',
     'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
-    'Pragma' => 'no-cache'
+    'Pragma' => 'no-cache',
+    'Expires' => '0',
+    'X-Content-Type-Options' => 'nosniff'
 ]);
 
     }

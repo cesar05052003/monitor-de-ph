@@ -93,7 +93,7 @@
                 <tr data-id="{{ $m->id }}" @if($m->valor_ph < 6.5 || $m->valor_ph > 8.5) class="table-danger" @endif>
                     <td>{{ $i + 1 }}</td>
                     <td>{{ $m->valor_ph }}</td>
-                    <td>{{ $m->tipo_superficie }}</td>
+                    <td>{{ $m->tipo_superficie === 'Importado' ? 'Líquido' : $m->tipo_superficie }}</td>
                     <td>{{ $m->fecha }}</td>
                     <td>{{ $m->hora }}</td>
                     <td>
@@ -181,7 +181,7 @@ if (valorPh < 6.5 || valorPh > 8.5) {
  fila.innerHTML = `
     <td>${table.rows.length + 1}</td>
     <td>${nuevaMedicion.valor_ph}</td>
-    <td>${nuevaMedicion.tipo_superficie}</td>
+    <td>${nuevaMedicion.tipo_superficie === 'Importado' ? 'Líquido' : nuevaMedicion.tipo_superficie}</td>
     <td>${nuevaMedicion.fecha}</td>
     <td>${nuevaMedicion.hora}</td>
     <td>

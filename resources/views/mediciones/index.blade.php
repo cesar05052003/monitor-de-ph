@@ -53,6 +53,12 @@
 
     <h1 class="mb-4">Registro de Mediciones de pH</h1>
     <div id="alerta-ph" class="mb-3"></div>
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
     <div class="mb-2">Valor pH actual: <strong id="valor-ph">--</strong></div>
     <button id="toggle-dark" class="btn btn-dark mb-3">🌙 Modo Oscuro</button>
     <a href="{{ route('mediciones.pdf') }}" class="btn btn-primary mb-3">
@@ -65,6 +71,11 @@
         {{ $recepcionActiva ? 'Detener recepción de datos' : 'Reanudar recepción de datos' }}
     </button>
 </form>
+
+    <form id="form-limpiar" method="POST" action="{{ route('mediciones.limpiar') }}" class="d-inline">
+        @csrf
+        <button type="submit" class="btn btn-danger mb-3" onclick="return confirm('¿Estás seguro? Esto eliminará todas las mediciones y no se podrá deshacer.')">Borrar todas las mediciones</button>
+    </form>
 
     
      <form method="GET" action="{{ route('mediciones.index') }}" class="mb-4 d-flex align-items-end gap-2">

@@ -24,6 +24,9 @@ Route::get('/mediciones/ultima', [MedicionWebController::class, 'getLatestMeasur
 
 Route::get('/mediciones/pdf', [MedicionWebController::class, 'descargarPDF'])->name('mediciones.pdf');
 
+// Ruta para limpiar todas las mediciones desde la interfaz
+Route::post('/mediciones/limpiar', [MedicionWebController::class, 'limpiar'])->name('mediciones.limpiar');
+
 
 // Ruta API para insertar medición desde JavaScript
 Route::post('/api/registrar-medicion', function (Request $request) {

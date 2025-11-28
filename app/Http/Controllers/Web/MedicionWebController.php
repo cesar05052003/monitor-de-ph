@@ -153,4 +153,17 @@ class MedicionWebController extends Controller
 
         return redirect()->route('mediciones.index');
     }
+
+    /**
+     * Elimina todas las mediciones (accion desde la interfaz web).
+     */
+    public function limpiar(Request $request)
+    {
+        try {
+            DB::table('mediciones')->delete();
+            return redirect()->route('mediciones.index')->with('success', 'Se eliminaron todas las mediciones correctamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('mediciones.index')->with('error', 'Error al eliminar las mediciones: ' . $e->getMessage());
+        }
+    }
 }

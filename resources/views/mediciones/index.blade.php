@@ -101,7 +101,7 @@
         </thead>
         <tbody>
             @foreach($mediciones as $i => $m)
-                <tr data-id="{{ $m->id }}" @if($m->valor_ph < 6.5 || $m->valor_ph > 8.5) class="table-danger" @endif>
+                <tr data-id="{{ $m->id }}" @if($m->valor_ph < 7.5 || $m->valor_ph > 11.5) class="table-danger" @endif>
                     <td>{{ $i + 1 }}</td>
                     <td>{{ $m->valor_ph }}</td>
                     <td>{{ $m->tipo_superficie === 'Importado' ? 'Líquido' : $m->tipo_superficie }}</td>
@@ -235,20 +235,27 @@ if (valorPh < 6.5 || valorPh > 8.5) {
             const alertaDiv = document.getElementById('alerta-ph');
 const ph = parseFloat(nuevaMedicion.valor_ph);
 
-if (ph < 6.5) {
+                // Nuevos umbrales: normal 8.0 - 11.0, alerta baja < 7.5, alerta alta > 11.5
+                if (ph < 7.5) {
     alertaDiv.innerHTML = `
         <div class="alert alert-danger">
-            ⚠️ Alerta: El pH está en un nivel ácido (${ph}) — fuera del rango saludable (6.5 – 8.5).
+            ⚠️ Alerta baja: pH ${ph} — mezcla muy diluida o detergente débil (pH < 7.5).
         </div>`;
-} else if (ph > 8.5) {
+} else if (ph > 11.5) {
     alertaDiv.innerHTML = `
         <div class="alert alert-danger">
-            ⚠️ Alerta: El pH está en un nivel básico (${ph}) — fuera del rango saludable (6.5 – 8.5).
+            ⚠️ Alerta alta: pH ${ph} — solución muy alcalina, potencialmente irritante (pH > 11.5).
         </div>`;
-} else {
+} else if (ph >= 8.0 && ph <= 11.0) {
     alertaDiv.innerHTML = `
         <div class="alert alert-success">
-            ✅ El pH actual (${ph}) está dentro del rango saludable (6.5 – 8.5).
+            ✅ Rango normal de operación: 8 a 11 pH — pH actual (${ph}).
+        </div>`;
+} else {
+    // Valores entre 7.5-7.99 o 11.01-11.5 — advertencia leve
+    alertaDiv.innerHTML = `
+        <div class="alert alert-warning">
+            ⚠ Atención: pH ${ph} está cercano al límite. Verifica la mezcla.
         </div>`;
 }
 
